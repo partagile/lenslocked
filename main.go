@@ -20,10 +20,28 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>FAQ page</h1>")
 }
 
+func notFoundHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	fmt.Fprint(w, "<h1>doh! 404 not found</h1>")
+}
+
+func pathHandler(w http.ResponseWriter, r *http.Request) {
+	switch r.URL.Path {
+	case "/":
+		homeHandler(w, r)
+	case "/contact":
+		contactHandler(w, r)
+	case "/faq":
+		faqHandler(w, r)
+	default:
+		notFoundHandler(w, r)
+	}
+}
+
 func main() {
-	http.HandleFunc("/", homeHandler)
-	http.HandleFunc("/contact", contactHandler)
-	http.HandleFunc("/faq", faqHandler)
+	http.HandleFunc("/", pathHandler)
+	// http.HandleFunc("/contact", contactHandler)
+	// http.HandleFunc("/faq", faqHandler)
 	fmt.Println("Starting the server on :3000")
 	http.ListenAndServe(":3000", nil)
 }

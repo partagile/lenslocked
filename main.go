@@ -20,11 +20,6 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "<h1>FAQ page</h1>")
 }
 
-func notFoundHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>doh! 404 not found</h1>")
-}
-
 func pathHandler(w http.ResponseWriter, r *http.Request) {
 	switch r.URL.Path {
 	case "/":
@@ -34,7 +29,8 @@ func pathHandler(w http.ResponseWriter, r *http.Request) {
 	case "/faq":
 		faqHandler(w, r)
 	default:
-		notFoundHandler(w, r)
+		// notFoundHandler(w, r) // returns 200 which is not an appropriate status
+		http.Error(w, "Doh! 404 Not Found!", http.StatusNotFound)
 	}
 }
 

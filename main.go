@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func homeHandler(w http.ResponseWriter, r *http.Request) {
@@ -29,11 +30,21 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 }
 
+// HTTP handler accessing the url routing parameters.
+func chiRequestUrlParamHandler(w http.ResponseWriter, r *http.Request) {
+	// fetch the url parameter `"userID"` from the request of a matching
+	// routing pattern. An example routing pattern could be: /users/{userID}
+	userID := chi.URLParam(r, "userID")
+	fmt.Fprint(w, "hello: ", userID, " ... ")
+}
+
 func main() {
 	r := chi.NewRouter()
+	r.Use(middleware.Logger)
 	r.Get("/", homeHandler)
 	r.Get("/faq", faqHandler)
 	r.Get("/contact", contactHandler)
+	r.Get("/chi/{userID}", chiRequestUrlParamHandler)
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Doh! 404 Not Found!", http.StatusNotFound)
 	})

@@ -29,24 +29,7 @@ func faqHandler(w http.ResponseWriter, r *http.Request) {
 	`)
 }
 
-func pathHandler(w http.ResponseWriter, r *http.Request) {
-	switch r.URL.Path {
-	case "/":
-		homeHandler(w, r)
-	case "/contact":
-		contactHandler(w, r)
-	case "/faq":
-		faqHandler(w, r)
-	default:
-		// notFoundHandler(w, r) // returns 200 which is not an appropriate status
-
-	}
-}
-
 func main() {
-	// http.HandleFunc("/", pathHandler)
-	// http.HandleFunc("/contact", contactHandler)
-	// http.HandleFunc("/faq", faqHandler)
 	r := chi.NewRouter()
 	r.Get("/", homeHandler)
 	r.Get("/faq", faqHandler)

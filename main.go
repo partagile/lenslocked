@@ -11,38 +11,35 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func homeHandler(w http.ResponseWriter, r *http.Request) {
+func executeTemplate(w http.ResponseWriter, filepath string) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	tplPath := filepath.Join("templates", "home.gohtml")
-	tpl, err := template.ParseFiles(tplPath)
+	tpl, err := template.ParseFiles(filepath)
 	if err != nil {
-		log.Print("parsing template: %v", err)
+		log.Printf("parsing template: %v", err)
 		http.Error(w, "ERROR parsing template.", http.StatusInternalServerError)
 		return
 	}
 	err = tpl.Execute(w, nil)
 	if err != nil {
-		log.Print("executing template: %v", err)
+		log.Printf("executing template: %v", err)
 		http.Error(w, "ERROR executing template.", http.StatusInternalServerError)
 		return
 	}
 }
 
+func homeHandler(w http.ResponseWriter, r *http.Request) {
+	tplPath := filepath.Join("templates", "home.gohtml")
+	executeTemplate(w, tplPath)
+}
+
 func contactHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, "<h1>This is the contact page.</h1><p>To get in touch, email me at <a href=\"mailto:test@test.com\">test@test.com</a>")
+	tplPath := filepath.Join("templates", "contact.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 func faqHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	fmt.Fprint(w, `<h1>FAQ page</h1>
-	this is a multi-line string <br />
-	gonna add some line breaks <br />
-	<ul>
-	<li><strong>Question 1</strong> - Yup!</li>
-	<li><strong>Question 2</strong> - Not so fast</li>
-	<li><strong>Question 3</strong> - Satisfaction guaranteed!</li>
-	`)
+	tplPath := filepath.Join("templates", "faq.gohtml")
+	executeTemplate(w, tplPath)
 }
 
 // HTTP handler accessing the url routing parameters.

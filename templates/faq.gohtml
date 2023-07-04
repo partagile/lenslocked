@@ -1,8 +1,10 @@
 <h1>FAQ page</h1>
-this is a multi-line string <br />
-gonna add some line breaks <br />
 <ul>
-    <li><strong>Question 1</strong> - Yup!</li>
-	<li><strong>Question 2</strong> - Not so fast</li>
-	<li><strong>Question 3</strong> - Satisfaction guaranteed!</li>
+	{{range .}}
+		{{template "qa" .}}
+	{{end}}
 </ul>
+
+{{define "qa"}}
+	<li><strong>{{.Question}}</strong> - {{.Answer}}</li>
+{{end}}

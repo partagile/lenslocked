@@ -2,39 +2,14 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"net/http"
 	"path/filepath"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/partagile/lenslocked/controllers"
 	"github.com/partagile/lenslocked/views"
 )
-
-func executeTemplate(w http.ResponseWriter, filepath string) {
-	t, err := views.Parse(filepath)
-	if err != nil {
-		log.Printf("parsing template: %v", err)
-		http.Error(w, "ERROR parsing template.", http.StatusInternalServerError)
-		return
-	}
-	t.Execute(w, nil)
-}
-
-func homeHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "home.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func contactHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "contact.gohtml")
-	executeTemplate(w, tplPath)
-}
-
-func faqHandler(w http.ResponseWriter, r *http.Request) {
-	tplPath := filepath.Join("templates", "faq.gohtml")
-	executeTemplate(w, tplPath)
-}
 
 // HTTP handler accessing the url routing parameters.
 func chiRequestUrlParamHandler(w http.ResponseWriter, r *http.Request) {
@@ -47,10 +22,27 @@ func chiRequestUrlParamHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Get("/", homeHandler)
-	r.Get("/faq", faqHandler)
-	r.Get("/contact", contactHandler)
+
+	tpl, err := views.Parse(filepath.Join("templates", "home.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse(filepath.Join("templates", "contact.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/contact", controllers.StaticHandler(tpl))
+
+	tpl, err = views.Parse(filepath.Join("templates", "faq.gohtml"))
+	if err != nil {
+		panic(err)
+	}
+	r.Get("/faq", controllers.StaticHandler(tpl))
+
 	r.Get("/chi/{userID}", chiRequestUrlParamHandler)
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Doh! 404 Not Found!", http.StatusNotFound)
 	})

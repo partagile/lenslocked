@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/gorilla/csrf"
 	"github.com/partagile/lenslocked/controllers"
 	"github.com/partagile/lenslocked/models"
 	"github.com/partagile/lenslocked/templates"
@@ -57,5 +58,11 @@ func main() {
 	})
 
 	fmt.Println("Starting the server on :3000")
-	http.ListenAndServe(":3000", r)
+
+	csrfKey := "ScAAfWpRcMRTMrVBuvHJWwZUpAWPNFJn"
+	csrfMw := csrf.Protect(
+		[]byte(csrfKey), 
+		// TODO: Fix this before deploying; disabled for local dev
+		csrf.Secure(false))
+	http.ListenAndServe(":3000", csrfMw(r))
 }

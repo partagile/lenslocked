@@ -38,7 +38,7 @@ func main() {
 	userService := models.UserService{
 		DB: db,
 	}
-	
+
 	usersC := controllers.Users{
 		UserService: &userService,
 	}
@@ -61,7 +61,7 @@ func main() {
 
 	csrfKey := "ScAAfWpRcMRTMrVBuvHJWwZUpAWPNFJn"
 	csrfMw := csrf.Protect(
-		[]byte(csrfKey), 
+		[]byte(csrfKey),
 		// TODO: Fix this before deploying; disabled for local dev
 		csrf.Secure(false))
 	http.ListenAndServe(":3000", csrfMw(r))

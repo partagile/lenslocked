@@ -9,7 +9,7 @@ import (
 
 type Users struct {
 	Templates struct {
-		New Template
+		New    Template
 		SignIn Template
 	}
 	UserService *models.UserService
@@ -46,7 +46,7 @@ func (u Users) SignIn(w http.ResponseWriter, r *http.Request) {
 
 func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 	var data struct {
-		Email string
+		Email    string
 		Password string
 	}
 	data.Email = r.FormValue("email")
@@ -58,21 +58,21 @@ func (u Users) ProcessSignIn(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	cookie := http.Cookie{
-		Name: "email",
-		Value: user.Email,
-		Path: "/",
+		Name:     "email",
+		Value:    user.Email,
+		Path:     "/",
 		HttpOnly: true,
 	}
 	http.SetCookie(w, &cookie)
 	fmt.Fprintf(w, "User authenticated: %+v", user)
 }
 
-func (u Users) CurrentUser (w http.ResponseWriter, r *http.Request) {
+func (u Users) CurrentUser(w http.ResponseWriter, r *http.Request) {
 	email, err := r.Cookie("email")
 	if err != nil {
 		fmt.Fprint(w, "The email cookie could not be read.")
 		return
 	}
-	fmt.Fprintf(w,"Email: %s\n\n", email.Value)
+	fmt.Fprintf(w, "Email: %s\n\n", email.Value)
 	fmt.Fprintf(w, "Headers: %+v\n", r.Header)
 }

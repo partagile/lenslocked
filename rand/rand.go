@@ -20,12 +20,12 @@ func Bytes(n int) ([]byte, error) {
 
 // String returns a random string using crypto/rand.
 // n = num bytes used to generate random string
-func String (n int) (string, error) {
+func String(n int) (string, error) {
 	b, err := Bytes(n)
 	if err != nil {
 		return "", fmt.Errorf("string: %w", err)
 	}
-	return base64.URLEncoding.EncodeToString(b) , nil
+	return base64.URLEncoding.EncodeToString(b), nil
 }
 
 const SessionTokenBytes = 32

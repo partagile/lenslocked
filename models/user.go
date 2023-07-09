@@ -27,7 +27,7 @@ func (us *UserService) Create(email, password string) (*User, error) {
 	passwordHash := string(hashedBytes)
 
 	user := User{
-		Email: email,
+		Email:        email,
 		PasswordHash: passwordHash,
 	}
 	row := us.DB.QueryRow(`

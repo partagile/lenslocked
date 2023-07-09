@@ -15,12 +15,12 @@ func main() {
 	case "compare":
 		compare(os.Args[2], os.Args[3])
 	default:
-		fmt.Printf("Invalid subcommand %q\n",os.Args[1])
+		fmt.Printf("Invalid subcommand %q\n", os.Args[1])
 	}
 
 }
 
-func hash (password string) {
+func hash(password string) {
 	hashedBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		fmt.Printf("Error hashing %v\n", password)
@@ -29,7 +29,7 @@ func hash (password string) {
 	fmt.Println(string(hashedBytes))
 }
 
-func compare (password, hash string) {
+func compare(password, hash string) {
 	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
 	if err != nil {
 		fmt.Printf("Password is invalid: %v\n", password)

@@ -1,6 +1,11 @@
 package models
 
-import "database/sql"
+import (
+	"database/sql"
+	"fmt"
+
+	"github.com/partagile/lenslocked/rand"
+)
 
 type Session struct {
 	ID     int
@@ -17,9 +22,19 @@ type SessionService struct {
 }
 
 func (ss *SessionService) Create(userID int) (*Session, error) {
-	// TODO: create session token
+	token, err := rand.SessionToken()
+	if err != nil {
+		return nil, fmt.Errorf("create: %w", err)
+	}
+	// TODO: hash the session token
+	session := Session{
+		UserID: userID,
+		Token:  token,
+		// TODO: set TokenHash
+	}
+	// Store session in the DB
 	// TODO: implement SessionService.Create
-	return nil, nil
+	return &session, nil
 }
 
 func (ss *SessionService) User(token string) (*User, error) {

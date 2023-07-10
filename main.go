@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/gorilla/csrf"
 	"github.com/partagile/lenslocked/controllers"
+	"github.com/partagile/lenslocked/migrations"
 	"github.com/partagile/lenslocked/models"
 	"github.com/partagile/lenslocked/templates"
 	"github.com/partagile/lenslocked/views"
@@ -36,7 +37,7 @@ func main() {
 	}
 	defer db.Close()
 
-	err = models.Migrate(db, "migrations")
+	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
 		panic(err)
 	}

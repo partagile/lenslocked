@@ -7,6 +7,11 @@ import (
 	"github.com/partagile/lenslocked/rand"
 )
 
+const (
+	// Minimum # of bytes to be used for each session token
+	MinBytesPerToken = 32
+)
+
 type Session struct {
 	ID     int
 	UserID int
@@ -19,10 +24,18 @@ type Session struct {
 
 type SessionService struct {
 	DB *sql.DB
+	//BytesPerToken - used to determine # of bytes to use when generating
+	//session token. Ignored if not set or < MinBytesPerToken; at which
+	//point the value will be MinBytesPerToken
+	BytesPerToken int
 }
 
 func (ss *SessionService) Create(userID int) (*Session, error) {
-	token, err := rand.SessionToken()
+	bytesPerToken := ss.BytesPerToken
+	if bytesPerToken < MinBytesPerToken {
+		bytesPerToken = MinBytesPerToken
+	}
+	token, err := rand.String(bytesPerToken)
 	if err != nil {
 		return nil, fmt.Errorf("create: %w", err)
 	}

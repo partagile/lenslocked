@@ -1,128 +1,45 @@
 package main
 
 import (
+	"context"
 	"fmt"
+)
 
-	"github.com/partagile/lenslocked/models"
+// TL;DR - don't export keys nor the type that's being used for context
+//
+// using custom type as underlying 'any' type this ensures that no one
+// else has access to or inadvertently sets a context outside of your control
+type ctxKey string
+
+const (
+	favoriteColor ctxKey = "favorite-color"
 )
 
 func main() {
-	cfg := models.DefaultPostgresConfig()
-	db, err := models.Open(cfg)
+	//Exploring contexts
+	// using string as a key
+	ctx := context.Background()
+	ctx = context.WithValue(ctx, "favorite-color", "blue")
+	value := ctx.Value("favorite-color")
+	fmt.Println(value)
 
-	if err != nil {
-		panic(err)
-	}
-	defer db.Close()
+	// value will now return nil
+	// "favoriteColor" is NOT the same type as the "favorite-key" above
+	ctx = context.WithValue(ctx, "favorite-color", "blue")
+	value = ctx.Value(favoriteColor)
+	fmt.Println(value)
 
-	err = db.Ping()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("Connected...")
+	// value will now return the correct value
+	// ctx was set with "favoriteColor" and value pulls it out
+	ctx = context.WithValue(ctx, favoriteColor, "blue")
+	value = ctx.Value(favoriteColor)
+	fmt.Println(value)
 
-	us := models.UserService{
-		DB: db,
-	}
-	user, err := us.Create("test3@example.com", "password1")
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Println(user)
-	// Creating a table
-	// _, err = db.Exec(`
-	// 	CREATE TABLE IF NOT EXISTS users (
-	// 		id SERIAL PRIMARY KEY,
-	// 		name TEXT,
-	// 		email TEXT UNIQUE NOT NULL
-	// 	);
-
-	// 	CREATE TABLE IF NOT EXISTS orders (
-	// 		id SERIAL PRIMARY KEY,
-	// 		user_id INT NOT NULL,
-	// 		amount INT,
-	// 		description TEXT
-	// 	);
-	// `)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Println("Tables created...")
-
-	// Insert some dat...
-	// name := "Test User"
-	// email := "test3@example.com"
-	// row := db.QueryRow(`
-	// 	INSERT INTO users (name, email)
-	// 	VALUES ($1, $2) RETURNING id;`, name, email)
-	// var id int
-	// err = row.Scan(&id)
-	// if err != nil{
-	// 	panic(err)
-	// }
-	// fmt.Println("Inserted user; id = ", id)
-
-	// id := 1
-	// row := db.QueryRow(`
-	// 	SELECT name, email
-	// 	FROM users
-	// 	WHERE id=$1;`, id)
-	// var name, email string
-	// err = row.Scan(&name, &email)
-	// if err == sql.ErrNoRows {
-	// 	fmt.Println("Doh! No rows. Better handle this.")
-	// }
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Printf("User info: name=%s, email=%s\n", name, email)
-
-	// userID := 1
-	// for i := 1; i <= 5; i++ {
-	// 	amount := i*100
-	// 	desc := fmt.Sprintf("Fake order #%d",i)
-	// 	_, err := db.Exec(`
-	// 		INSERT INTO orders(user_id, amount, description)
-	// 		VALUES($1, $2, $3);`, userID, amount, desc)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// }
-	// fmt.Println("Created fake orders.")
-
-	// type Order struct {
-	// 	ID int
-	// 	UserID int
-	// 	Amount string
-	// 	Description string
-	// }
-
-	// var orders []Order
-
-	// userID := 1
-	// rows, err := db.Query(`
-	// 	SELECT id, amount, description
-	// 	FROM orders
-	// 	WHERE user_id=$1;`, userID)
-	// if err != nil{
-	// 	panic(err)
-	// }
-	// defer rows.Close()
-
-	// for rows.Next() {
-	// 	var order Order
-	// 	order.UserID = userID
-	// 	err := rows.Scan(&order.ID, &order.Amount, &order.Description)
-	// 	if err != nil {
-	// 		panic(err)
-	// 	}
-	// 	orders = append(orders, order)
-	// }
-	// err = rows.Err()
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Println("Orders:", orders)
+	// value1 and value2 ensures that even if other libraries
+	// inadvertently set "favorite-color", the custom context
+	// "favoriteColor" is under your/the dev's control
+	ctx = context.WithValue(ctx, "favorite-color", 123)
+	value1 := ctx.Value("favorite-color")
+	value2 := ctx.Value(favoriteColor)
+	fmt.Println(value1, value2)
 }

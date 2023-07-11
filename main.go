@@ -67,12 +67,15 @@ func main() {
 		http.Error(w, "Doh! 404 Not Found!", http.StatusNotFound)
 	})
 
-	fmt.Println("Starting the server on :3000")
+	umw := controllers.UserMiddleware{
+		SessionService: &sessionService,
+	}
 
 	csrfKey := "ScAAfWpRcMRTMrVBuvHJWwZUpAWPNFJn"
 	csrfMw := csrf.Protect(
 		[]byte(csrfKey),
 		// TODO: Fix this before deploying; disabled for local dev
 		csrf.Secure(false))
-	http.ListenAndServe(":3000", csrfMw(r))
+	fmt.Println("Starting the server on :3000")
+	http.ListenAndServe(":3000", csrfMw(umw.SetUser(r)))
 }

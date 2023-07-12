@@ -64,6 +64,20 @@ func (es *EmailService) Send(email Email) error {
 	return nil
 }
 
+func (es *EmailService) ForgotPassword(to, resetURL string) error {
+	email := Email{
+		Subject:   "Reset your password",
+		To:        to,
+		Plaintext: "Please visit the following link to reset your password: " + resetURL,
+		HTML:      `Please visit the following link to reset your password: <a href="` + resetURL + `">` + resetURL + `</a></p>`,
+	}
+	err := es.Send(email)
+	if err != nil {
+		return fmt.Errorf("forgot password email %w:", err)
+	}
+	return nil
+}
+
 func (es *EmailService) setFrom(msg *mail.Message, email Email) {
 	var from string
 	switch {

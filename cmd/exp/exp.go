@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 	"strconv"
@@ -37,5 +38,11 @@ func main() {
 	msg.SetHeader("Subject", subject)
 	msg.SetBody("text/plain", plaintext)
 	msg.AddAlternative("text/html", html)
-	msg.WriteTo(os.Stdout)
+
+	dialer := mail.NewDialer(host, port, username, password)
+	err = dialer.DialAndSend(msg)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Println("Message sent!")
 }

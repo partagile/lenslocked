@@ -6,8 +6,8 @@ import (
 	"os"
 	"strconv"
 
-	"github.com/go-mail/mail/v2"
 	"github.com/joho/godotenv"
+	"github.com/partagile/lenslocked/models"
 )
 
 func main() {
@@ -26,23 +26,22 @@ func main() {
 	username := os.Getenv("SMTP_USERNAME")
 	password := os.Getenv("SMTP_PASSWORD")
 
-	from := "test@lenslocked.com"
-	to := "hello@lenslocked.com"
-	subject := "this is a test email"
-	plaintext := "test email body in plaintext"
-	html := `<h1>hi there!</h1><p>test email body in html</p>`
+	email := models.Email{
+		From:      "test@lenslocked.com",
+		To:        "hello@lenslocked.com",
+		Subject:   "this is a test email",
+		Plaintext: "test email body in plaintext",
+		HTML:      `<h1>hi there!</h1><p>test email body in html</p>`,
+	}
 
-	msg := mail.NewMessage()
-	msg.SetHeader("To", to)
-	msg.SetHeader("From", from)
-	msg.SetHeader("Subject", subject)
-	msg.SetBody("text/plain", plaintext)
-	msg.AddAlternative("text/html", html)
+	es := models.NewEmailService(models.SMTPConfig{
+		Host:     host,
+		Port:     port,
+		Username: username,
+		Password: password,
+	})
 
-	dialer := mail.NewDialer(host, port, username, password)
-	// using dialer.DialAndSend vs. dialer.Send()...
-	// this keeps the connection open until defer dialer.Close()
-	err = dialer.DialAndSend(msg)
+	err = es.Send(email)
 	if err != nil {
 		panic(err)
 	}

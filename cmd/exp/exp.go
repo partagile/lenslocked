@@ -40,6 +40,8 @@ func main() {
 	msg.AddAlternative("text/html", html)
 
 	dialer := mail.NewDialer(host, port, username, password)
+	// using dialer.DialAndSend vs. dialer.Send()...
+	// this keeps the connection open until defer dialer.Close()
 	err = dialer.DialAndSend(msg)
 	if err != nil {
 		panic(err)

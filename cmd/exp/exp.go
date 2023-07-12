@@ -5,17 +5,8 @@ import (
 	"os"
 	"strconv"
 
+	"github.com/go-mail/mail/v2"
 	"github.com/joho/godotenv"
-)
-
-// TL;DR - don't export keys nor the type that's being used for context
-//
-// using custom type as underlying 'any' type this ensures that no one
-// else has access to or inadvertently sets a context outside of your control
-type ctxKey string
-
-const (
-	favoriteColor ctxKey = "favorite-color"
 )
 
 func main() {
@@ -34,4 +25,17 @@ func main() {
 	username := os.Getenv("SMTP_USERNAME")
 	password := os.Getenv("SMTP_PASSWORD")
 
+	from := "test@lenslocked.com"
+	to := "hello@lenslocked.com"
+	subject := "this is a test email"
+	plaintext := "test email body in plaintext"
+	html := `<h1>hi there!</h1><p>test email body in html</p>`
+
+	msg := mail.NewMessage()
+	msg.SetHeader("To", to)
+	msg.SetHeader("From", from)
+	msg.SetHeader("Subject", subject)
+	msg.SetBody("text/plain", plaintext)
+	msg.AddAlternative("text/html", html)
+	msg.WriteTo(os.Stdout)
 }

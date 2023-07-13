@@ -3,6 +3,7 @@ package controllers
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/partagile/lenslocked/context"
 	"github.com/partagile/lenslocked/models"
@@ -10,11 +11,15 @@ import (
 
 type Users struct {
 	Templates struct {
-		New    Template
-		SignIn Template
+		New            Template
+		SignIn         Template
+		ForgotPassword Template
+		CheckYourEmail Template
 	}
-	UserService    *models.UserService
-	SessionService *models.SessionService
+	UserService          *models.UserService
+	SessionService       *models.SessionService
+	PasswordResetService *models.PasswordResetService
+	EmailService         *models.EmailService
 }
 
 func (u Users) New(w http.ResponseWriter, r *http.Request) {
@@ -96,6 +101,42 @@ func (u Users) ProcessSignOut(w http.ResponseWriter, r *http.Request) {
 	}
 	deleteCookie(w, CookieSession)
 	http.Redirect(w, r, "/signin", http.StatusFound)
+}
+
+func (u Users) ForgotPassword(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	u.Templates.ForgotPassword.Execute(w, r, data)
+}
+
+func (u Users) ProcessForgotPassword(w http.ResponseWriter, r *http.Request) {
+	var data struct {
+		Email string
+	}
+	data.Email = r.FormValue("email")
+	pwReset, err := u.PasswordResetService.Create(data.Email)
+	if err != nil {
+		// TODO: handle other cases; e.g. email does not exist
+		fmt.Println(err)
+		http.Error(w, "Error processing Reset Password", http.StatusInternalServerError)
+		return
+	}
+	// Hardcoded values for now, these will be different later on
+	vals := url.Values{
+		"token": {pwReset.Token},
+	}
+	resetURL := "http://localhost:3000/reset-pw?" + vals.Encode()
+	err = u.EmailService.ForgotPassword(data.Email, resetURL)
+	if err != nil {
+		fmt.Println(err)
+		http.Error(w, "Error processing token bits", http.StatusInternalServerError)
+		return
+	}
+	// Don't render the reset token here! Ensure the user confirms they have
+	// access to their email account to verify their identity.
+	u.Templates.CheckYourEmail.Execute(w, r, data)
 }
 
 type UserMiddleware struct {

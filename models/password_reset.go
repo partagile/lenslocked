@@ -85,6 +85,7 @@ func (service *PasswordResetService) Create(email string) (*PasswordReset, error
 
 func (service *PasswordResetService) Consume(token string) (*User, error) {
 	// 1. validate token; ensure it is not expired
+	// 2. ensure we have the userid for the token
 	tokenHash := service.hash(token)
 	var user User
 	var pwReset PasswordReset
@@ -95,7 +96,7 @@ func (service *PasswordResetService) Consume(token string) (*User, error) {
 			users.email, 
 			users.password_hash
 		FROM password_resets
-			JOIN users on users.id = password_resets.user_id
+			JOIN users ON users.id = password_resets.user_id
 		WHERE password_resets.token_hash = $1;`, tokenHash)
 	err := row.Scan(&pwReset.ID, &pwReset.ExpiresAt,
 		&user.ID, &user.Email, &user.PasswordHash)
@@ -105,7 +106,6 @@ func (service *PasswordResetService) Consume(token string) (*User, error) {
 	if time.Now().After(pwReset.ExpiresAt) {
 		return nil, fmt.Errorf("token expiration %v", token)
 	}
-	// 2. ensure we have the userid for the token
 	// 3. delete the token once consumed
 	err = service.delete(pwReset.ID)
 	if err != nil {

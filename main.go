@@ -54,14 +54,6 @@ func loadEnvConfig() (config, error) {
 	return cfg, nil
 }
 
-// HTTP handler accessing the url routing parameters.
-func chiRequestUrlParamHandler(w http.ResponseWriter, r *http.Request) {
-	// fetch the url parameter `"userID"` from the request of a matching
-	// routing pattern. An example routing pattern could be: /users/{userID}
-	userID := chi.URLParam(r, "userID")
-	fmt.Fprint(w, "hello: ", userID, " ... ")
-}
-
 func main() {
 	cfg, err := loadEnvConfig()
 	if err != nil {
@@ -135,7 +127,6 @@ func main() {
 		r.Use(umw.RequireUser)
 		r.Get("/", usersC.CurrentUser)
 	})
-	r.Get("/chi/{userID}", chiRequestUrlParamHandler)
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Doh! 404 Not Found!", http.StatusNotFound)
 	})

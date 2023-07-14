@@ -11,7 +11,7 @@ import (
 
 // Open will open a SQL connection with the provided
 // Postgres database. If you call this, you will need
-// to ensure connection is closed wigh db.Close() method.
+// to ensure connection is closed with db.Close() method.
 func Open(config PostgresConfig) (*sql.DB, error) {
 	db, err := sql.Open("pgx", config.String())
 

@@ -6,6 +6,7 @@ import (
 	"net/url"
 
 	"github.com/partagile/lenslocked/context"
+	"github.com/partagile/lenslocked/errors"
 	"github.com/partagile/lenslocked/models"
 )
 
@@ -41,6 +42,9 @@ func (u Users) Create(w http.ResponseWriter, r *http.Request) {
 
 	user, err := u.UserService.Create(data.Email, data.Password)
 	if err != nil {
+		if errors.Is(err, models.ErrEmailTaken) {
+			err = errors.Public(err, "There is an account with that email address. Did you forget your password?")
+		}
 		u.Templates.New.Execute(w, r, data, err)
 		return
 	}

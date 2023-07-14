@@ -33,11 +33,7 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 			},
 			"errors": func() []string {
 				// TODO: hardcoding for now; to be cleaned up
-				return []string{
-					"don't do that!",
-					"there is already an account with that email address.",
-					"something went wrong.",
-				}
+				return nil
 			},
 		},
 	)
@@ -54,7 +50,7 @@ type Template struct {
 	htmlTpl *template.Template
 }
 
-func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}) {
+func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface{}, errs ...error) {
 	tpl, err := t.htmlTpl.Clone()
 	if err != nil {
 		log.Printf("cloning template: %v\n", err)
@@ -68,6 +64,14 @@ func (t Template) Execute(w http.ResponseWriter, r *http.Request, data interface
 			},
 			"currentUser": func() *models.User {
 				return context.User(r.Context())
+			},
+			"errors": func() []string {
+				var errMessages []string
+				// TODO: clean up; the following is temporary
+				for _, err := range errs {
+					errMessages = append(errMessages, err.Error())
+				}
+				return errMessages
 			},
 		},
 	)

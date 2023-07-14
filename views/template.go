@@ -34,9 +34,9 @@ func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
 			"errors": func() []string {
 				// TODO: hardcoding for now; to be cleaned up
 				return []string{
-					// "don't do that!",
-					// "there is already an account with that email address.",
-					// "something went wrong.",
+					"don't do that!",
+					"there is already an account with that email address.",
+					"something went wrong.",
 				}
 			},
 		},

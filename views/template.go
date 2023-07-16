@@ -9,7 +9,7 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
-	"path"
+	"path/filepath"
 
 	"github.com/gorilla/csrf"
 	"github.com/partagile/lenslocked/context"
@@ -28,7 +28,7 @@ func Must(t Template, err error) Template {
 }
 
 func ParseFS(fs fs.FS, patterns ...string) (Template, error) {
-	tpl := template.New(path.Base(patterns[0]))
+	tpl := template.New(filepath.Base(patterns[0]))
 	tpl = tpl.Funcs(
 		template.FuncMap{
 			"csrfField": func() (template.HTML, error) {

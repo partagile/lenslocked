@@ -116,6 +116,7 @@ func main() {
 		GalleryService: galleryService,
 	}
 	galleriesC.Templates.New = views.Must(views.ParseFS(templates.FS, "galleries_new.gohtml", "tailwind.gohtml"))
+	galleriesC.Templates.Edit = views.Must(views.ParseFS(templates.FS, "galleries_edit.gohtml", "tailwind.gohtml"))
 
 	// Setup router and routes
 	r := chi.NewRouter()
@@ -143,6 +144,7 @@ func main() {
 			r.Use(umw.RequireUser)
 			r.Get("/new", galleriesC.New)
 			r.Post("/", galleriesC.Create)
+			r.Get("/{id}/edit", galleriesC.Edit)
 		})
 	})
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {

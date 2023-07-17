@@ -115,6 +115,7 @@ func main() {
 	galleriesC := controllers.Galleries{
 		GalleryService: galleryService,
 	}
+	galleriesC.Templates.Show = views.Must(views.ParseFS(templates.FS, "galleries_show.gohtml", "tailwind.gohtml"))
 	galleriesC.Templates.New = views.Must(views.ParseFS(templates.FS, "galleries_new.gohtml", "tailwind.gohtml"))
 	galleriesC.Templates.Edit = views.Must(views.ParseFS(templates.FS, "galleries_edit.gohtml", "tailwind.gohtml"))
 	galleriesC.Templates.Index = views.Must(views.ParseFS(templates.FS, "galleries_index.gohtml", "tailwind.gohtml"))

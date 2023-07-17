@@ -22,3 +22,4 @@ go.work
 
 *.notemd
 *.env
+images/

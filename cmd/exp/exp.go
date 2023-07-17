@@ -2,7 +2,8 @@ package main
 
 import (
 	"fmt"
-	"path/filepath"
+
+	"github.com/partagile/lenslocked/models"
 )
 
 func main() {
@@ -44,14 +45,18 @@ func main() {
 	// // }
 	// fmt.Println("Reset password email sent!")
 
-	fmt.Println("On windows:")
-	fmt.Println(filepath.Base("/foo.js"))
-	fmt.Println(filepath.Base("/foo/bar.js"))
-	fmt.Println(filepath.Base("/foo/bar/baz.js"))
-	fmt.Println(filepath.Base("dev.txt"))
-	fmt.Println(filepath.Base("../todo.txt"))
-	fmt.Println(filepath.Base(".."))
-	fmt.Println(filepath.Base("."))
-	fmt.Println(filepath.Base("/galleries/new"))
-	fmt.Println(filepath.Base(""))
+	// fmt.Println("On windows:")
+	// fmt.Println(filepath.Base("/foo.js"))
+	// fmt.Println(filepath.Base("/foo/bar.js"))
+	// fmt.Println(filepath.Base("/foo/bar/baz.js"))
+	// fmt.Println(filepath.Base("dev.txt"))
+	// fmt.Println(filepath.Base("../todo.txt"))
+	// fmt.Println(filepath.Base(".."))
+	// fmt.Println(filepath.Base("."))
+	// fmt.Println(filepath.Base("/galleries/new"))
+	// fmt.Println(filepath.Base(""))
+
+	// ----------------- TESTING image globbing
+	gs := models.GalleryService{}
+	fmt.Println(gs.Images(2))
 }

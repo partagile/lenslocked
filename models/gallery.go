@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"path/filepath"
 )
 
 type Gallery struct {
@@ -14,6 +15,9 @@ type Gallery struct {
 
 type GalleryService struct {
 	DB *sql.DB
+	// ImagesDir is where images are located. If not set, then default will be
+	// the "images" directory
+	ImagesDir string
 }
 
 func (service *GalleryService) Create(title string, userID int) (*Gallery, error) {
@@ -94,4 +98,12 @@ func (service *GalleryService) Delete(id int) error {
 		return fmt.Errorf("gallery-delete: %w", err)
 	}
 	return nil
+}
+
+func (service *GalleryService) galleryDir(id int) string {
+	imagesDir := service.ImagesDir
+	if imagesDir == "" {
+		imagesDir = "images"
+	}
+	return filepath.Join(imagesDir, fmt.Sprintf("gallery-%d", id))
 }

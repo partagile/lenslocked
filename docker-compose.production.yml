@@ -8,8 +8,12 @@ services:
     restart: always
     volumes:
       - ./images:/app/images
-    # TODO: THIS IS FOR TESTING ONLY - Remove before deploying
+
+  caddy:
+    image: caddy
+    restart: always
     ports:
-      - 3000:3000
-    depends_on:
-      - db
+      - 80:80
+      - 443:443
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile

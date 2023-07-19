@@ -176,6 +176,11 @@ func main() {
 			r.Post("/{id}/images", galleriesC.UploadImage)
 		})
 	})
+
+	// Use local CSS files
+	assetsHandler := http.FileServer(http.Dir("assets"))
+	r.Get("/assets/*", http.StripPrefix("/assets", assetsHandler).ServeHTTP)
+
 	r.NotFound(func(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Doh! 404 Not Found!", http.StatusNotFound)
 	})

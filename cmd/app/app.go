@@ -80,16 +80,24 @@ func main() {
 		panic(err)
 	}
 
+	err = run(cfg)
+	if err != nil {
+		panic(err)
+	}
+}
+
+func run(cfg config) error {
+
 	// Setup the DB connection and the schema migrations
 	db, err := models.Open(cfg.PSQL)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	defer db.Close()
 
 	err = models.MigrateFS(db, migrations.FS, ".")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	// Setup services
@@ -157,10 +165,6 @@ func main() {
 	r.Post("/forgot-pw", usersC.ProcessForgotPassword)
 	r.Get("/reset-password", usersC.ResetPassword)
 	r.Post("/reset-password", usersC.ProcessResetPassword)
-	r.Route("/users/me", func(r chi.Router) {
-		r.Use(umw.RequireUser)
-		r.Get("/", usersC.CurrentUser)
-	})
 	r.Route("/galleries", func(r chi.Router) {
 		r.Get("/{id}", galleriesC.Show)
 		r.Get("/{id}/images/{filename}", galleriesC.Image)
@@ -187,8 +191,5 @@ func main() {
 
 	// Start the server
 	fmt.Printf("Starting the server on %s...\n", cfg.Server.Address)
-	err = http.ListenAndServe(cfg.Server.Address, r)
-	if err != nil {
-		panic(err)
-	}
+	return http.ListenAndServe(cfg.Server.Address, r)
 }

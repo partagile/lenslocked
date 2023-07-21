@@ -20,8 +20,8 @@
 # Go workspace file
 go.work
 
-*.notemd
 *.env
 images/
 images-backup/
 node_modules/
+notes/
